@@ -1,43 +1,53 @@
-# API connection check from a Linux terminal
+# HubSpot API connection check from a Linux terminal
 
-Use this quick test to confirm that your API host is reachable and that your API key or token works.
+Use this quick test to confirm that your Linux terminal can reach the HubSpot API and that your HubSpot access token works.
 
-## 1. Set your values
+## 1. Set the real HubSpot API host
 
-Replace the example values with your real API host and token.
-
-```bash
-export API_BASE_URL="https://api.example.com"
-export API_TOKEN="replace-with-real-token"
-```
-
-## 2. Run the simplest possible request
-
-Use `curl` to call a lightweight endpoint such as `/health`, `/status`, or `/ping`.
+HubSpot API requests use `https://api.hubapi.com`.
 
 ```bash
-curl -i \
-  -H "Authorization: Bearer $API_TOKEN" \
-  "$API_BASE_URL/health"
+export HUBSPOT_API_BASE_URL="https://api.hubapi.com"
 ```
 
-## 3. Check the result
+## 2. Load your HubSpot access token
+
+Use a real HubSpot private app token or OAuth access token.
+
+```bash
+read -rsp "HubSpot access token: " HUBSPOT_ACCESS_TOKEN && echo
+```
+
+## 3. Run the simplest possible HubSpot request
+
+Call HubSpot's account details endpoint to confirm both connectivity and authentication.
+
+```bash
+curl --request GET \
+  --url "$HUBSPOT_API_BASE_URL/account-info/v3/details" \
+  --header "Authorization: Bearer $HUBSPOT_ACCESS_TOKEN"
+```
+
+## 4. Check the result
 
 What to look for:
 
-- `HTTP/1.1 200 OK` or `HTTP/2 200` means the connection worked.
-- `401` or `403` usually means the host is reachable, but the token is missing, expired, or invalid.
-- `404` means the host is reachable, but the endpoint path is probably wrong.
-- A timeout, DNS error, or connection refused message usually means a network, hostname, or server issue.
+- `200` means the connection worked and the token was accepted.
+- `401` usually means the token is missing, expired, malformed, or invalid.
+- `403` usually means the token is valid but does not have access to the resource.
+- A timeout, DNS error, or connection refused message usually means a network or hostname problem.
 
-## 4. Optional: print only the status code
+A successful response will return HubSpot account data such as `portalId`, `timeZone`, and `uiDomain`.
 
-If you want a very small success/fail check:
+## 5. Optional: print only the status code
+
+If you want the smallest possible success/fail check:
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" \
-  -H "Authorization: Bearer $API_TOKEN" \
-  "$API_BASE_URL/health"
+  --request GET \
+  --url "$HUBSPOT_API_BASE_URL/account-info/v3/details" \
+  --header "Authorization: Bearer $HUBSPOT_ACCESS_TOKEN"
 ```
 
-A `200` confirms the simplest test connection succeeded.
+A `200` confirms the HubSpot API connection test succeeded.
