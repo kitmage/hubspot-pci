@@ -1,6 +1,8 @@
 # Env Variables:
-HubSpot Personal Access Key = $HUBSPOT_TOKEN
-HubSpot User ID = $HUBSPOT_USER_ID
+HubSpot Personal Access Key = $HUBSPOT_TOKEN;
+HubSpot User ID = $HUBSPOT_USER_ID;
+Sequence ID = 582602486;
+
 
 # Notes
 We're trying to make an automation for HubSpot using data fetched over API.
